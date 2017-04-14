@@ -1,0 +1,9 @@
+## Interface: 11200
+## Author: moh
+## Title: KLHTM-BlizzardUI
+## Version: 1.0
+## LoadOnDemand: 1
+## LoadWith: KLHThreatMeter
+
+Threat.xml
+KTM_BlizzardUI.lua
