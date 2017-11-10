@@ -31,7 +31,7 @@
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
-			<Texture file="Interface\AddOns\KLHThreatMeterBlizz\NumericThreatBorder">
+			<Texture file="Interface\AddOns\KLHThreatMeterBlizz\textures\NumericThreatBorder">
 				<TexCoords left="0" right="0.765625" top="0" bottom="0.5625"/>
 			</Texture>
 		</Layer>

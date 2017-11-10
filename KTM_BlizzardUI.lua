@@ -11,7 +11,7 @@ local GetTime = GetTime
 local UnitName = UnitName
 
 mod.blizzardui = me
-me.isenabled = true
+me.isenabled = true 
 
 me.gui = {
 	["Frame"] = TargetFrameNumericalThreat,
@@ -24,6 +24,8 @@ me.gui.Frame:SetScript('OnEvent', function()
 end)
 me.gui.Frame:RegisterEvent('PLAYER_REGEN_DISABLED')
 me.gui.Frame:RegisterEvent('PLAYER_REGEN_ENABLED')
+me.gui.Frame:RegisterEvent('RAID_ROSTER_UPDATE')
+me.gui.Frame:RegisterEvent('PARTY_MEMBERS_CHANGED')
 
 me.gui.Frame.PLAYER_REGEN_DISABLED = function()
 	me.isenabled = true
@@ -34,6 +36,35 @@ me.gui.Frame.PLAYER_REGEN_ENABLED = function()
 	me.gui.Frame:Hide()
 end
 
+me.gui.Frame.RAID_ROSTER_UPDATE = function()
+	me.playerschanged()
+end
+
+me.gui.Frame.PARTY_MEMBERS_CHANGED = function()
+	me.playerschanged()
+end
+
+me.playerschanged = function()
+	local playersRaid = GetNumRaidMembers()
+	local playersParty = GetNumPartyMembers()
+	local inGroup = false
+	
+	if playersRaid > 0 then
+		inGroup = true
+	elseif playersParty > 0 then
+		inGroup = true
+	end
+	
+	if not inGroup then
+		me.group = false
+		me.isenabled = 'false'
+		me.gui.Frame:Hide()
+	else
+		me.group = true
+		me.isenabled = true
+	end
+end
+
 me.onupdate = function()
 	if last_update > GetTime()+update_freq then
 		return
@@ -42,8 +73,10 @@ me.onupdate = function()
 end
 
 me.redraw = function()
-	if not UnitAffectingCombat('player') or UnitIsPlayer('target') then
-		me.gui.Frame:Hide()
+	if not UnitAffectingCombat('player') or UnitIsPlayer('target') or not me.group then
+		if not klhtm.blizzardui.enableAdjust then
+			me.gui.Frame:Hide()
+		end
 		return
 	end
 	
