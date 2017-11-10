@@ -1,7 +1,7 @@
 ![Picture of KLHThreatMeterBlizz](docs/img/KLHThreatMeterBlizz.png?raw=true "Title")
 # This AddOn requires KLHThreatMeter to work which is NOT included
 
-KLHThreatMeterBlizz adds a small threat indicator to your target frame that will also change color depenging on your current threat.
+KLHThreatMeterBlizz adds a small threat indicator to your target frame that will also change color depending on your current threat.
 
 If you want to use this addon with custom target frames
 -----------------------
