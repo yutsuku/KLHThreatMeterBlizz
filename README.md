@@ -13,4 +13,8 @@ If you want to use this addon with custom target frames
 4) fine tune position
 5) right click
 
+To reset to default state use this command
+	/ktmsnap reset
+
+
 The addon shows data directly from KLHThreatMeter, which unfortunetly means that it will **not** be accurate when there are many monsters around and there is no work around this in 1.12 patch. Sorry!
