@@ -1,10 +1,10 @@
 ## Interface: 11200
 ## Author: moh
 ## Title: KLHTM-BlizzardUI
-## Version: 1.1
+## Version: 1.2
 ## LoadOnDemand: 1
 ## LoadWith: KLHThreatMeter
-## SavedVariablesPerCharacter: KLHTMBlizzardUI_Parent, KLHTMBlizzardUI_x, KLHTMBlizzardUI_y
+## SavedVariablesPerCharacter: KLHTMBlizzardUI_Parent, KLHTMBlizzardUI_x, KLHTMBlizzardUI_y, KLHTMBlizzardUI_point, KLHTMBlizzardUI_relativePoint
 
 Threat.xml
 KTM_BlizzardUI.lua

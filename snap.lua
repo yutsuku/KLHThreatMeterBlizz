@@ -1,32 +1,65 @@
 local _G = getfenv()
 
 local threatFrame = _G['TargetFrameNumericalThreat']
+local frame = CreateFrame('Frame')
+frame:Hide()
+frame.enableSnapping = false
+frame.lastFrameID = 0
+
+frame.lazyload = CreateFrame('Frame')
+frame.lazyload.elapsed = 0
+frame.lazyload.attempts = 0
 
 local function save_position()
 	local point, relativeTo, relativePoint, x, y = threatFrame:GetPoint()
 	
 	KLHTMBlizzardUI_Parent = threatFrame:GetParent():GetName()
-	KLHTMBlizzardUI_x = x
-	KLHTMBlizzardUI_y = y
+	if point == 'TOPLEFT' and relativePoint == 'TOPLEFT' then
+		relativeTo = threatFrame:GetParent()
+		KLHTMBlizzardUI_x = x - relativeTo:GetLeft()
+		KLHTMBlizzardUI_y = y + threatFrame:GetHeight()
+		relativeTo = relativeTo:GetName()
+	else
+		KLHTMBlizzardUI_x = x
+		KLHTMBlizzardUI_y = y
+	end
+	KLHTMBlizzardUI_point = point
+	KLHTMBlizzardUI_relativePoint = relativePoint
 end
 
 local function load_position()
-	if KLHTMBlizzardUI_Parent and KLHTMBlizzardUI_x and KLHTMBlizzardUI_y then
-		threatFrame:SetParent(KLHTMBlizzardUI_Parent)
-		threatFrame:ClearAllPoints()
-		threatFrame:SetPoint('BOTTOM', KLHTMBlizzardUI_Parent, 'TOP', KLHTMBlizzardUI_x, KLHTMBlizzardUI_y)
+	if KLHTMBlizzardUI_Parent and KLHTMBlizzardUI_x and KLHTMBlizzardUI_y and KLHTMBlizzardUI_point and KLHTMBlizzardUI_relativePoint then
+		if not _G[KLHTMBlizzardUI_Parent] then
+			if frame.lazyload.attempts >= 10 then
+				frame.lazyload.enable = false
+			else
+				frame.lazyload.enable = true
+			end
+		else
+			frame.lazyload.enable = false
+			frame.lazyload:Hide()
+			threatFrame:SetParent(KLHTMBlizzardUI_Parent)
+			threatFrame:ClearAllPoints()
+			threatFrame:SetPoint(KLHTMBlizzardUI_point, KLHTMBlizzardUI_Parent, KLHTMBlizzardUI_relativePoint, KLHTMBlizzardUI_x, KLHTMBlizzardUI_y)
+		end
 	end
 end
 
-local frame = CreateFrame('Frame')
-frame:Hide()
-frame.enableSnapping = false
-frame.lastFrameID = 0
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function()
 	if arg1 == 'KLHThreatMeterBlizz' then
-		DEFAULT_CHAT_FRAME:AddMessage('snap loaded')
 		load_position()
+	end
+end)
+
+frame.lazyload:SetScript('OnUpdate', function()
+	if this.enable then
+		this.elapsed = this.elapsed + arg1
+		if this.elapsed >= 1 then
+			this.elapsed = 0
+			this.attempts = this.attempts + 1
+			load_position()
+		end
 	end
 end)
 
@@ -49,7 +82,16 @@ visualFrame:SetScript('OnMouseDown', function()
 	local point, relativeTo, relativePoint, x, y = frame.snapFrameID:GetPoint()
 	threatFrame:SetParent(frame.snapFrameID)
 	threatFrame:ClearAllPoints()
-	threatFrame:SetPoint('BOTTOM', frame.snapFrameID, 'TOP', 0, -22)
+	threatFrame:SetPoint('BOTTOM', frame.snapFrameID:GetName(), 'TOP', 0, 0)
+	
+	-- dear developers
+	-- please stop making other developers life harder
+	-- and just stick to blizzard' standards
+	-- thank you
+	if frame.snapFrameID:GetName() and strsub(frame.snapFrameID:GetName(), 1, 3) == 'LUF' then
+		threatFrame:SetFrameLevel(frame.snapFrameID:GetFrameLevel()+10)
+	end
+	
 	threatFrame:Show()
 	
 	threatFrame:SetMovable(true)
@@ -62,6 +104,7 @@ visualFrame:SetScript('OnMouseDown', function()
 			threatFrame:EnableMouse(false)
 			threatFrame:Hide()
 			visualFrame:Hide()
+			klhtm.blizzardui.enableAdjust = false
 			save_position()
 			DEFAULT_CHAT_FRAME:AddMessage('Locked!')
 		end
@@ -73,7 +116,6 @@ visualFrame:SetScript('OnMouseDown', function()
 end)
 
 frame:SetScript('OnUpdate', function()
-
 	if not this.enableSnapping then
 		return
 	end
@@ -103,7 +145,13 @@ frame:SetScript('OnUpdate', function()
 		this.visual:SetWidth(this.frameID:GetWidth() * this.frameID:GetEffectiveScale() / UIParent:GetScale())
 		this.visual:SetHeight(this.frameID:GetHeight() * this.frameID:GetEffectiveScale() / UIParent:GetScale())
 		this.visual:SetFrameStrata(this.frameID:GetFrameStrata())
-		this.visual:SetFrameLevel(this.frameID:GetFrameLevel()+1)
+		
+		if this.frameID:GetName() and strsub(this.frameID:GetName(), 1, 3) == 'LUF' then
+			this.visual:SetFrameLevel(this.frameID:GetFrameLevel()+10)
+		else
+			this.visual:SetFrameLevel(this.frameID:GetFrameLevel()+1)
+		end
+		
 	end
 end)
 
@@ -116,6 +164,8 @@ SlashCmdList["KTMBLIZZ"] = function(msg)
 		KLHTMBlizzardUI_Parent = nil
 		KLHTMBlizzardUI_x = nil
 		KLHTMBlizzardUI_y = nil
+		KLHTMBlizzardUI_point = nil
+		KLHTMBlizzardUI_relativePoint = nil
 		ReloadUI()
 		return
 	end

@@ -73,10 +73,12 @@ me.onupdate = function()
 end
 
 me.redraw = function()
+	if klhtm.blizzardui.enableAdjust then
+		return
+	end
+	
 	if not UnitAffectingCombat('player') or UnitIsPlayer('target') or not me.group then
-		if not klhtm.blizzardui.enableAdjust then
-			me.gui.Frame:Hide()
-		end
+		me.gui.Frame:Hide()
 		return
 	end
 	
