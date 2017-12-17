@@ -13,6 +13,8 @@ local UnitName = UnitName
 mod.blizzardui = me
 me.isenabled = true 
 
+_DEBUG_KTMBLIZZ = _DEBUG_KTMBLIZZ or {}
+
 me.gui = {
 	["Frame"] = TargetFrameNumericalThreat,
 	["bg"] = TargetFrameNumericalThreatBG,
@@ -26,6 +28,7 @@ me.gui.Frame:RegisterEvent('PLAYER_REGEN_DISABLED')
 me.gui.Frame:RegisterEvent('PLAYER_REGEN_ENABLED')
 me.gui.Frame:RegisterEvent('RAID_ROSTER_UPDATE')
 me.gui.Frame:RegisterEvent('PARTY_MEMBERS_CHANGED')
+me.gui.Frame:RegisterEvent('ADDON_LOADED')
 
 me.gui.Frame.PLAYER_REGEN_DISABLED = function()
 	me.isenabled = true
@@ -42,6 +45,12 @@ end
 
 me.gui.Frame.PARTY_MEMBERS_CHANGED = function()
 	me.playerschanged()
+end
+
+me.gui.Frame.ADDON_LOADED = function()
+	if ( arg1 == 'KLHThreatMeterBlizz' ) then
+		me.playerschanged()
+	end
 end
 
 me.playerschanged = function()
@@ -63,6 +72,7 @@ me.playerschanged = function()
 		me.group = true
 		me.isenabled = true
 	end
+	_DEBUG_KTMBLIZZ.inGroup = inGroup
 end
 
 me.onupdate = function()
@@ -74,11 +84,16 @@ end
 
 me.redraw = function()
 	if klhtm.blizzardui.enableAdjust then
+		_DEBUG_KTMBLIZZ.visible = -1
 		return
 	end
 	
 	if not UnitAffectingCombat('player') or UnitIsPlayer('target') or not me.group then
 		me.gui.Frame:Hide()
+		_DEBUG_KTMBLIZZ.visible = {}
+		_DEBUG_KTMBLIZZ.visible.UnitAffectingCombat = not UnitAffectingCombat('player')
+		_DEBUG_KTMBLIZZ.visible.UnitIsPlayer = UnitIsPlayer('target')
+		_DEBUG_KTMBLIZZ.visible.megroup = not me.group
 		return
 	end
 	
@@ -98,8 +113,10 @@ me.redraw = function()
 		me.gui.text:SetText(format("%d", threat).."%")
 		me.gui.bg:SetVertexColor(me.GetThreatStatusColor(threat))
 		me.gui.Frame:Show()
+		_DEBUG_KTMBLIZZ.visible = 1
 	else
 		me.gui.Frame:Hide()
+		_DEBUG_KTMBLIZZ.visible = 2
 	end
 end
 

@@ -10,6 +10,8 @@ frame.lazyload = CreateFrame('Frame')
 frame.lazyload.elapsed = 0
 frame.lazyload.attempts = 0
 
+_DEBUG_KTMBLIZZ = {}
+
 local function save_position()
 	local point, relativeTo, relativePoint, x, y = threatFrame:GetPoint()
 	
@@ -25,6 +27,12 @@ local function save_position()
 	end
 	KLHTMBlizzardUI_point = point
 	KLHTMBlizzardUI_relativePoint = relativePoint
+	
+	_DEBUG_KTMBLIZZ.save_position = {}
+	_DEBUG_KTMBLIZZ.save_position.x = KLHTMBlizzardUI_x
+	_DEBUG_KTMBLIZZ.save_position.y = KLHTMBlizzardUI_y
+	_DEBUG_KTMBLIZZ.save_position.point = KLHTMBlizzardUI_point
+	_DEBUG_KTMBLIZZ.save_position.relativePoint = KLHTMBlizzardUI_relativePoint
 end
 
 local function load_position()
@@ -41,6 +49,14 @@ local function load_position()
 			threatFrame:SetParent(KLHTMBlizzardUI_Parent)
 			threatFrame:ClearAllPoints()
 			threatFrame:SetPoint(KLHTMBlizzardUI_point, KLHTMBlizzardUI_Parent, KLHTMBlizzardUI_relativePoint, KLHTMBlizzardUI_x, KLHTMBlizzardUI_y)
+			
+			_DEBUG_KTMBLIZZ.load_position = {}
+			_DEBUG_KTMBLIZZ.load_position.point = KLHTMBlizzardUI_point
+			_DEBUG_KTMBLIZZ.load_position.relativePoint = KLHTMBlizzardUI_relativePoint
+			_DEBUG_KTMBLIZZ.load_position.parent = KLHTMBlizzardUI_Parent
+			_DEBUG_KTMBLIZZ.load_position.x = KLHTMBlizzardUI_x
+			_DEBUG_KTMBLIZZ.load_position.y = KLHTMBlizzardUI_y
+			_DEBUG_KTMBLIZZ.load_position.attempts = frame.lazyload.attempts
 		end
 	end
 end
@@ -48,6 +64,7 @@ end
 frame:RegisterEvent('ADDON_LOADED')
 frame:SetScript('OnEvent', function()
 	if arg1 == 'KLHThreatMeterBlizz' then
+		_DEBUG_KTMBLIZZ.addon_loaded = true
 		load_position()
 	end
 end)

@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Author: moh
 ## Title: KLHTM-BlizzardUI
-## Version: 1.2
+## Version: 1.2.1
 ## LoadOnDemand: 1
 ## LoadWith: KLHThreatMeter
 ## SavedVariablesPerCharacter: KLHTMBlizzardUI_Parent, KLHTMBlizzardUI_x, KLHTMBlizzardUI_y, KLHTMBlizzardUI_point, KLHTMBlizzardUI_relativePoint
